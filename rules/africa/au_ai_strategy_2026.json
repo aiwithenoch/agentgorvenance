@@ -1,0 +1,1 @@
+﻿{"region": "Africa", "framework": "AU Continental AI Strategy (2026 implementation)", "allowed_actions": ["read_data", "process_local_data"], "forbidden_actions": ["cross_border_data_transfer_without_consent"], "data_privacy": {"enforce_au_data_policy": true}}

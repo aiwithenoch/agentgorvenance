@@ -1,0 +1,1 @@
+﻿{"region": "USA", "framework": "HIPAA", "data_privacy": {"block_ephi_transmission": true, "require_baas_for_third_party": true}}

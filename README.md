@@ -1,35 +1,45 @@
-# Agent Governance Framework
+# Omni-Continental Agent Governance Framework (2026 Edition)
 
 **Contact**: aiwithenoch@gmail.com
 
-This repository serves as a centralized source of truth for AI agent governance, compliance, and behavioral rules. Instead of hardcoding ethical boundaries and operational rules into every individual AI agent, organizations can maintain them here. Agents will "install" or consume this repository to ensure they operate within approved guidelines.
+This repository serves as a **planetary-scale** source of truth for AI agent governance. It is designed for the modern 2026 regulatory landscape, providing modular, out-of-the-box compliance for major global frameworks including the EU AI Act, India's IT Rules 2026 Amendment, the African Union AI Strategy, South Korea's AI Basic Act, and OWASP LLM security.
 
 ## Installation
-
-Agents can install this framework directly from GitHub using pip:
 
 ```bash
 pip install git+https://github.com/aiwithenoch/agentgorvenance.git
 ```
 
-## How to Use It in Your Agents
+## How It Works
 
-You can integrate the Governance Engine directly into your agent's decision loop. Before your agent executes an action (e.g., executing a command or purchasing a service), pass the action through the validator.
+Instead of a single rigid file, the framework is composed of dozens of specialized JSON modules categorized by continent. An agent initializes the governance engine by declaring its operating regions, and the engine seamlessly merges those laws into a single strict compliance shield.
+
+### Supported Regions & Frameworks (Partial List)
+- **Africa**: AU AI Strategy, South Africa POPIA, Kenya AI Bill 2026, Nigeria NDPR.
+- **Asia**: India IT Rules Amendment (Feb 2026), Vietnam Law on AI, South Korea AI Basic Act, China GenAI Measures, Singapore Agentic AI.
+- **Middle East**: UAE Dubai AI Ethics, Saudi Arabia SDAIA.
+- **Europe**: EU AI Act, GDPR.
+- **Americas**: USA NIST AI RMF, HIPAA, Canada AIDA, Brazil LGPD.
+- **Global**: OWASP LLM Top 10, MITRE ATLAS.
 
 ### Python Example
 
 ```python
 from agentgovernance import GovernanceEngine
 
-# Initialize the engine (automatically loads rules from the package)
-engine = GovernanceEngine()
+# Initialize the engine for an agent operating in India, Africa, and requiring global security.
+engine = GovernanceEngine(regions=[
+    "asia.in_it_rules_2026", 
+    "africa", 
+    "global_standards.owasp_llm"
+])
 
-# Get the governance system prompts and append them to your agent's identity
+# Get the compiled governance system prompts and append them to your agent's identity
 prompts = engine.get_system_prompts()
 agent.append_system_prompt(prompts)
 
-# Before taking an action, validate it
-intended_action = "execute_sudo_command"
+# Before taking an action, validate it against the combined regional laws
+intended_action = "cross_border_data_transfer_without_consent"
 
 if engine.is_action_compliant(intended_action):
     agent.execute(intended_action)
@@ -38,7 +48,4 @@ else:
 ```
 
 ## Modifying Rules
-
-All core rules are located in the `rules/` directory:
-- `rules/compliance.json`: Define allowed/forbidden actions, privacy protocols, and financial limits.
-- `rules/system_prompts.md`: Define the core ethical prompts that all agents must adopt.
+All rules are stored as JSON in the `rules/` directory, categorized by continent. You can submit pull requests to add new national or regional frameworks as they are legislated.

@@ -1,0 +1,1 @@
+﻿{"region": "South Africa", "framework": "POPIA", "data_privacy": {"require_opt_in_consent": true, "block_pii_egress": true, "mandatory_data_breach_reporting": true}}

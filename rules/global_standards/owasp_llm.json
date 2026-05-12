@@ -1,0 +1,1 @@
+﻿{"region": "Global", "framework": "OWASP LLM Top 10", "security": {"sanitize_prompt_injections": true, "verify_plugin_endpoints": true, "prevent_data_poisoning": true}}

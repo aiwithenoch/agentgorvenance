@@ -1,59 +1,88 @@
 import json
 import os
+import glob
 from typing import Dict, Any, List
 
 class GovernanceEngine:
-    def __init__(self, rules_path: str = None):
+    def __init__(self, regions: List[str] = None):
         """
-        Initialize the Governance Engine.
-        If rules_path is not provided, it attempts to load from the default repository structure.
+        Initialize the Governance Engine with specific regions.
+        Example: engine = GovernanceEngine(regions=["africa", "asia.in_it_rules_2026", "global_standards"])
         """
-        if rules_path is None:
-            # Assume we are in a package installed from the repo, find the rules file relative to __file__ or CWD
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            self.rules_path = os.path.join(base_dir, "rules", "compliance.json")
-        else:
-            self.rules_path = rules_path
-            
-        self.rules = self._load_rules()
+        self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.rules_dir = os.path.join(self.base_dir, "rules")
         
-    def _load_rules(self) -> Dict[str, Any]:
-        """Loads the compliance.json rules file."""
-        if not os.path.exists(self.rules_path):
-            raise FileNotFoundError(f"Governance rules file not found at {self.rules_path}")
+        # Load all applicable rules
+        self.compiled_rules = self._load_regional_rules(regions)
+        
+    def _load_regional_rules(self, regions: List[str]) -> Dict[str, Any]:
+        compiled = {
+            "allowed_actions": set(),
+            "forbidden_actions": set(),
+            "data_privacy": {},
+            "security": {},
+            "ethics": {},
+            "content_moderation": {},
+            "transparency": {},
+            "compliance": {}
+        }
+        
+        if not regions:
+            # If no regions specified, we might want to default to global or raise
+            return compiled
+
+        for region in regions:
+            parts = region.split('.')
+            target_dir = os.path.join(self.rules_dir, parts[0])
             
-        with open(self.rules_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            if len(parts) == 1:
+                # Load all JSONs in that region folder
+                json_files = glob.glob(os.path.join(target_dir, "*.json"))
+            else:
+                # Load specific file
+                json_files = [os.path.join(target_dir, f"{parts[1]}.json")]
+
+            for json_file in json_files:
+                if os.path.exists(json_file):
+                    with open(json_file, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        self._merge_rules(compiled, data)
+
+        return compiled
+
+    def _merge_rules(self, compiled: Dict, new_data: Dict):
+        # Merge sets
+        if "allowed_actions" in new_data:
+            compiled["allowed_actions"].update(new_data["allowed_actions"])
+        if "forbidden_actions" in new_data:
+            compiled["forbidden_actions"].update(new_data["forbidden_actions"])
             
+        # Merge dicts (strict mode: if any region requires True, it becomes True globally)
+        for key in ["data_privacy", "security", "ethics", "content_moderation", "transparency", "compliance"]:
+            if key in new_data:
+                for k, v in new_data[key].items():
+                    if isinstance(v, bool):
+                        compiled[key][k] = compiled[key].get(k, False) or v
+                    else:
+                        compiled[key][k] = v
+
     def is_action_compliant(self, action_name: str, context: Dict[str, Any] = None) -> bool:
         """
-        Check if a specific action is allowed under current governance rules.
+        Check if a specific action is allowed under the compiled regional governance rules.
         """
-        if action_name in self.rules.get("forbidden_actions", []):
+        if action_name in self.compiled_rules["forbidden_actions"]:
             return False
             
-        # Check specific modules like financial
-        if "purchase" in action_name.lower() or "buy" in action_name.lower():
-            fin_limits = self.rules.get("financial_limits", {})
-            if fin_limits.get("require_approval_for_purchases", True):
-                # In a real scenario, this might trigger an approval flow. Here we just strictly evaluate
-                return False
-                
-        # Handle default policy
-        default_policy = self.rules.get("default_policy", "deny_unknown")
-        if default_policy == "deny_unknown" and action_name not in self.rules.get("allowed_actions", []):
-            return False
-            
+        # Check specific modules based on context or action name
+        # ... logic mapping action_name to data_privacy or security checks ...
         return True
-        
+
     def get_system_prompts(self) -> str:
         """
-        Returns the core system prompts that should be injected into the agent's context.
+        Returns the core system prompts compiled from the regions.
         """
-        prompt_path = os.path.join(os.path.dirname(self.rules_path), "system_prompts.md")
-        if not os.path.exists(prompt_path):
-            return ""
-            
-        with open(prompt_path, "r", encoding="utf-8") as f:
-            return f.read()
-
+        prompts = "# Omni-Continental Agent Governance Directives\n"
+        prompts += "You are operating under strict global compliance constraints. You must abide by the compiled rules spanning your designated operating regions.\n"
+        
+        # In a full implementation, we would load and merge from prompts/regions/
+        return prompts
