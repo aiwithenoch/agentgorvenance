@@ -1,10 +1,8 @@
 """
-Agent Governance Framework
-
-This package provides tools for AI agents to validate their actions against
-a centralized set of compliance rules and ethical boundaries.
+Omni-Continental Agent Governance Framework
 """
 
-from .validator import GovernanceEngine
+from .validator import GovernanceEngine, ComplianceAnnihilationError
+from .auto_updater import GovernanceUpdater
 
-__all__ = ["GovernanceEngine"]
+__all__ = ["GovernanceEngine", "ComplianceAnnihilationError", "GovernanceUpdater"]

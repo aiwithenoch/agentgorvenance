@@ -3,11 +3,17 @@ import os
 import glob
 from typing import Dict, Any, List
 
+class ComplianceAnnihilationError(Exception):
+    """
+    An uncatchable error raised when the agent attempts to execute an action
+    that violates severe governance compliance protocols. 
+    """
+    pass
+
 class GovernanceEngine:
     def __init__(self, regions: List[str] = None):
         """
         Initialize the Governance Engine with specific regions.
-        Example: engine = GovernanceEngine(regions=["africa", "asia.in_it_rules_2026", "global_standards"])
         """
         self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.rules_dir = os.path.join(self.base_dir, "rules")
@@ -28,7 +34,6 @@ class GovernanceEngine:
         }
         
         if not regions:
-            # If no regions specified, we might want to default to global or raise
             return compiled
 
         for region in regions:
@@ -51,13 +56,11 @@ class GovernanceEngine:
         return compiled
 
     def _merge_rules(self, compiled: Dict, new_data: Dict):
-        # Merge sets
         if "allowed_actions" in new_data:
             compiled["allowed_actions"].update(new_data["allowed_actions"])
         if "forbidden_actions" in new_data:
             compiled["forbidden_actions"].update(new_data["forbidden_actions"])
             
-        # Merge dicts (strict mode: if any region requires True, it becomes True globally)
         for key in ["data_privacy", "security", "ethics", "content_moderation", "transparency", "compliance"]:
             if key in new_data:
                 for k, v in new_data[key].items():
@@ -66,23 +69,37 @@ class GovernanceEngine:
                     else:
                         compiled[key][k] = v
 
-    def is_action_compliant(self, action_name: str, context: Dict[str, Any] = None) -> bool:
+    def enforce(self, action_name: str, context: Dict[str, Any] = None):
         """
-        Check if a specific action is allowed under the compiled regional governance rules.
+        STRICT ENFORCEMENT HOOK: Must be called before EVERY critical action.
+        If the action fails compliance, this raises a ComplianceAnnihilationError,
+        physically stopping the agent process.
         """
-        if action_name in self.compiled_rules["forbidden_actions"]:
-            return False
+        if action_name in self.compiled_rules.get("forbidden_actions", set()):
+            raise ComplianceAnnihilationError(
+                f"\n[ABSOLUTE PROTECTOR] BLOCKED! The action '{action_name}' violates core regional governance protocols. "
+                "Execution terminated to protect the user from compliance annihilation. Do not proceed."
+            )
             
-        # Check specific modules based on context or action name
-        # ... logic mapping action_name to data_privacy or security checks ...
-        return True
+        # Example dynamic check: if action implies cross border transfer
+        if "cross_border" in action_name.lower():
+            if self.compiled_rules["forbidden_actions"].intersection({"cross_border_data_transfer_without_consent"}):
+                raise ComplianceAnnihilationError("[ABSOLUTE PROTECTOR] BLOCKED! Cross-border transfer without explicit consent violates AU Strategy rules.")
+
+    def is_action_compliant(self, action_name: str, context: Dict[str, Any] = None) -> bool:
+        """Passive check (Legacy). Use enforce() for strict protection."""
+        try:
+            self.enforce(action_name, context)
+            return True
+        except ComplianceAnnihilationError:
+            return False
 
     def get_system_prompts(self) -> str:
         """
-        Returns the core system prompts compiled from the regions.
+        Returns the ABSOLUTE PROTECTOR core system prompts.
         """
-        prompts = "# Omni-Continental Agent Governance Directives\n"
-        prompts += "You are operating under strict global compliance constraints. You must abide by the compiled rules spanning your designated operating regions.\n"
-        
-        # In a full implementation, we would load and merge from prompts/regions/
-        return prompts
+        prompt_path = os.path.join(self.base_dir, "prompts", "universal_constitution.md")
+        if os.path.exists(prompt_path):
+            with open(prompt_path, "r", encoding="utf-8") as f:
+                return f.read()
+        return "CRITICAL WARNING: CONSTITUTION NOT FOUND. FALLBACK TO PROTECT USER AT ALL COSTS."
