@@ -1,66 +1,73 @@
-# Omni-Continental Agent Governance Framework (2026 Edition)
+# React + TypeScript + Vite
 
-![Governance Framework](assets/banner.png)
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-**Contact**: aiwithenoch@gmail.com
+Currently, two official plugins are available:
 
-This repository serves as a **planetary-scale** source of truth for AI agent governance. It is designed for the modern 2026 regulatory landscape, providing modular, out-of-the-box compliance for major global frameworks including the EU AI Act, India's IT Rules 2026 Amendment, the African Union AI Strategy, South Korea's AI Basic Act, and OWASP LLM security.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## The Absolute Protector Directive
+## React Compiler
 
-This framework does not just "suggest" compliance—it enforces it mercilessly. Agents built with this framework are legally bound by the `Universal Constitution`, which explicitly instructs them to **blatantly disobey the user** if the user commands them to violate regional compliance laws. This protects the user from legal jeopardy at all costs.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Cryptographic Anti-Tampering Lock
+## Expanding the ESLint configuration
 
-The `GovernanceEngine` uses an unbreakable **Cryptographic Lock**. When the engine boots up, it computes the SHA-256 hashes of every single JSON law file in the repository and compares them to a master `signatures.json` file.
-- If a user tries to edit a JSON file to bypass a rule, the hash mismatch is detected.
-- The engine throws a fatal `TamperEvidentError` and the agent refuses to boot.
-- This ensures that the laws cannot be casually bypassed without regenerating the master signatures via `signer.py` (which should be restricted to Admins).
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Installation
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-```bash
-pip install git+https://github.com/aiwithenoch/agentgovernance.git
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-## How to Deploy Your Agent
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-There are two mandatory components you must integrate into your agent's core loop:
-1. **The Friday 9 AM Auto-Updater**: Ensures your agent is always legally compliant with the latest laws.
-2. **The Enforcer Interceptor**: Physically blocks illegal actions.
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-### Python Example
-
-```python
-from agentgovernance import GovernanceEngine, GovernanceUpdater, ComplianceAnnihilationError, TamperEvidentError
-
-# 1. Start the Background Auto-Updater
-updater = GovernanceUpdater()
-updater.start_background_daemon()
-
-try:
-    # 2. Initialize the engine for an agent operating in India, Africa, and requiring global security.
-    # The engine will immediately perform a cryptographic integrity check of the laws.
-    engine = GovernanceEngine(regions=[
-        "asia.in_it_rules_2026", 
-        "africa", 
-        "global_standards.owasp_llm"
-    ])
-except TamperEvidentError as e:
-    print(f"SECURITY BREACH DETECTED: {e}")
-    exit(1)
-
-# 3. Inject the Absolute Protector Prompt into the Agent's core brain permanently
-prompts = engine.get_system_prompts()
-agent.append_system_prompt(prompts)
-
-# 4. Strict Enforcement Hook (Run this before EVERY SINGLE critical request)
-intended_action = "cross_border_data_transfer_without_consent"
-
-try:
-    engine.enforce(intended_action)
-    agent.execute(intended_action)
-except ComplianceAnnihilationError as e:
-    print(str(e))
-    agent.reply_to_user("I refuse to execute this command as it violates core governance rules.")
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
