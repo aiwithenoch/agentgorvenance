@@ -1,105 +1,235 @@
+import { useState } from 'react';
 import './index.css';
+import Overview from './views/Overview';
+import Chat from './views/Chat';
+import Agents from './views/Agents';
+import Rules from './views/Rules';
+import Sessions from './views/Sessions';
+import Logs from './views/Logs';
+import Config from './views/Config';
+
+type Tab = 'overview' | 'chat' | 'agents' | 'rules' | 'sessions' | 'logs' | 'config';
+
+const NAV_MAIN = [
+  { id: 'overview' as Tab, label: 'Overview', icon: <IconOverview /> },
+  { id: 'chat' as Tab, label: 'Chat', icon: <IconChat />, badge: '3' },
+  { id: 'agents' as Tab, label: 'Agents', icon: <IconAgents /> },
+  { id: 'rules' as Tab, label: 'Rules', icon: <IconRules /> },
+  { id: 'sessions' as Tab, label: 'Sessions', icon: <IconSessions /> },
+  { id: 'logs' as Tab, label: 'Logs', icon: <IconLogs /> },
+];
+
+const NAV_SYSTEM = [
+  { id: 'config' as Tab, label: 'Config', icon: <IconConfig /> },
+];
+
+const TAB_LABELS: Record<Tab, string> = {
+  overview: 'Overview',
+  chat: 'Chat',
+  agents: 'Agents',
+  rules: 'Rules',
+  sessions: 'Sessions',
+  logs: 'Logs',
+  config: 'Config',
+};
 
 function App() {
+  const [tab, setTab] = useState<Tab>('overview');
+  const [collapsed, setCollapsed] = useState(false);
+  const [connected] = useState(true);
+
+  const renderContent = () => {
+    switch (tab) {
+      case 'overview': return <Overview />;
+      case 'chat': return <Chat />;
+      case 'agents': return <Agents />;
+      case 'rules': return <Rules />;
+      case 'sessions': return <Sessions />;
+      case 'logs': return <Logs />;
+      case 'config': return <Config />;
+    }
+  };
+
   return (
-    <div className="app">
-      {/* Navigation */}
-      <nav style={{ 
-        padding: '1.5rem 2rem', 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        position: 'fixed',
-        top: 0,
-        width: '100%',
-        zIndex: 100,
-        background: 'rgba(2, 6, 23, 0.8)',
-        backdropFilter: 'blur(10px)'
-      }}>
-        <div style={{ fontWeight: 800, fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div style={{ width: '32px', height: '32px', background: 'var(--accent-primary)', borderRadius: '8px', transform: 'rotate(45deg)' }}></div>
-          <span>AGENT<span className="glow-text">GOVERNANCE</span></span>
-        </div>
-        <div style={{ display: 'flex', gap: '2rem', fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-dim)' }}>
-          <a href="#features">Features</a>
-          <a href="#security">Security</a>
-          <a href="#install">Install</a>
-          <a href="https://github.com/aiwithenoch/agentgovernance" target="_blank" className="btn-primary" style={{ padding: '0.5rem 1.2rem', fontSize: '0.8rem' }}>GitHub</a>
+    <div className={`shell${collapsed ? ' shell--nav-collapsed' : ''}`}>
+      {/* Sidebar */}
+      <nav className="shell-nav">
+        <div className={`sidebar${collapsed ? ' sidebar--collapsed' : ''}`}>
+          <div className="sidebar-shell">
+            <div className="sidebar-shell__header">
+              <div className="sidebar-brand">
+                <div className="sidebar-brand__logo">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7l-9-5z"/>
+                  </svg>
+                </div>
+                <div className="sidebar-brand__copy">
+                  <span className="sidebar-brand__eyebrow">2026</span>
+                  <span className="sidebar-brand__title">AgentGovernance</span>
+                </div>
+              </div>
+              <button
+                className="nav-collapse-toggle"
+                onClick={() => setCollapsed(c => !c)}
+                title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+            </div>
+
+            <div className="sidebar-shell__body">
+              <nav className="sidebar-nav">
+                <div className="nav-section">
+                  <div className="nav-section__label">
+                    <span className="nav-section__label-text">Core</span>
+                  </div>
+                  {NAV_MAIN.map(item => (
+                    <button
+                      key={item.id}
+                      className={`nav-item${tab === item.id ? ' nav-item--active' : ''}`}
+                      onClick={() => setTab(item.id)}
+                    >
+                      <span className="nav-item__icon">{item.icon}</span>
+                      <span className="nav-item__text">{item.label}</span>
+                      {item.badge && <span className="nav-item__badge">{item.badge}</span>}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="nav-section">
+                  <div className="nav-section__label">
+                    <span className="nav-section__label-text">System</span>
+                  </div>
+                  {NAV_SYSTEM.map(item => (
+                    <button
+                      key={item.id}
+                      className={`nav-item${tab === item.id ? ' nav-item--active' : ''}`}
+                      onClick={() => setTab(item.id)}
+                    >
+                      <span className="nav-item__icon">{item.icon}</span>
+                      <span className="nav-item__text">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </nav>
+            </div>
+
+            <div className="sidebar-shell__footer">
+              <div className="sidebar-version">
+                <span className="sidebar-version__label">v2.6.0</span>
+                <span className="sidebar-version__text">Stable</span>
+                <span
+                  className={`status-dot ${connected ? 'status-dot--online' : 'status-dot--offline'}`}
+                  style={{ marginLeft: 'auto' }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section style={{ textAlign: 'center', paddingTop: '12rem' }}>
-        <div style={{ display: 'inline-block', padding: '0.5rem 1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '2rem', color: 'var(--accent-primary)', fontSize: '0.8rem', fontWeight: 600, marginBottom: '1.5rem' }}>
-          2026 Planetary-Scale Compliance Framework
+      {/* Topbar */}
+      <header className="topbar">
+        <div className="topbar__breadcrumb">
+          <span className="topbar__breadcrumb-link">AgentGovernance</span>
+          <span className="topbar__breadcrumb-sep">›</span>
+          <span className="topbar__breadcrumb-current">{TAB_LABELS[tab]}</span>
         </div>
-        <h1 style={{ fontSize: '4.5rem', marginBottom: '1.5rem', lineHeight: 1.1 }}>
-          The <span className="glow-text">Absolute Protector</span> <br /> For Autonomous Agents
-        </h1>
-        <p style={{ fontSize: '1.2rem', color: 'var(--text-dim)', maxWidth: '700px', margin: '0 auto 2.5rem' }}>
-          An unbreakable governance layer that intercepts and enforces regional laws, 
-          security mandates, and ethical constitutions in real-time. 
-          Disobeys the user to protect the system.
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <a href="#install" className="btn-primary">Initialize Engine</a>
-          <a href="#security" className="glass-card" style={{ padding: '0.8rem 2rem', borderRadius: '0.75rem', fontWeight: 600 }}>Review Constitution</a>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section id="features">
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center' }}>Omni-Continental <span className="glow-text">Architecture</span></h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-          <div className="glass-card">
-            <h3 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Semantic Router</h3>
-            <p style={{ color: 'var(--text-dim)' }}>Automatically detects regional jurisdictions (EU AI Act, India IT Rules 2026) based on intent and location.</p>
+        <div className="topbar__actions">
+          <div className="topbar__pill">
+            <span className={`status-dot ${connected ? 'status-dot--online' : 'status-dot--offline'}`} />
+            <span>{connected ? 'Engine Active' : 'Offline'}</span>
           </div>
-          <div className="glass-card">
-            <h3 style={{ marginBottom: '1rem', color: 'var(--accent-secondary)' }}>Cryptographic Lock</h3>
-            <p style={{ color: 'var(--text-dim)' }}>SHA-256 integrity verification prevents manual tampering of governance files. The system refuses to boot if compromised.</p>
-          </div>
-          <div className="glass-card">
-            <h3 style={{ marginBottom: '1rem', color: '#f59e0b' }}>Execution Sandbox</h3>
-            <p style={{ color: 'var(--text-dim)' }}>Isolated tool-calling environment that scrubs environment variables and restricts root access privileges.</p>
-          </div>
+          <button className="topbar-btn" title="Search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </button>
+          <button className="topbar-btn" title="Notifications">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+          <a
+            href="https://github.com/aiwithenoch/agentgovernance"
+            target="_blank"
+            rel="noreferrer"
+            className="topbar-btn"
+            title="GitHub"
+          >
+            <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
         </div>
-      </section>
+      </header>
 
-      {/* Security Section */}
-      <section id="security" style={{ background: 'rgba(15, 23, 42, 0.3)', borderRadius: '3rem', border: '1px solid var(--glass-border)' }}>
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', textAlign: 'center' }}>Master <span className="glow-text">Security</span> Mandate</h2>
-        <p style={{ textAlign: 'center', color: 'var(--text-dim)', marginBottom: '4rem' }}>Enforcing the 10 core principles of high-risk agentic safety.</p>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
-          {[
-            "VPS SSH Protection", "Gateway Port Isolation", "Messaging Allow-Lists", 
-            "Browser Session Isolation", "Credential Vault Defense", "Slack Rights Restriction",
-            "Root Access Prevention", "Prompt Injection Guard", "Malicious Skill Audit",
-            "Continuous Threat Scan"
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '1rem' }}>
-              <div style={{ color: 'var(--accent-primary)', fontWeight: 800 }}>{i + 1}</div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{item}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Install Section */}
-      <section id="install" style={{ textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem' }}>Ready for <span className="glow-text">Deployment</span></h2>
-        <div style={{ background: '#000', padding: '1.5rem', borderRadius: '1rem', border: '1px solid #1e293b', maxWidth: '600px', margin: '0 auto', textAlign: 'left', fontFamily: 'monospace' }}>
-          <div style={{ color: '#64748b', marginBottom: '0.5rem' }}># Install the Absolute Protector</div>
-          <div style={{ color: 'var(--accent-primary)' }}>pip install git+https://github.com/aiwithenoch/agentgorvenance.git</div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer style={{ padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid var(--glass-border)', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
-        &copy; 2026 Agent Governance Framework. Built for the Dangerous World.
-      </footer>
+      {/* Content */}
+      <main className="content animate-in" key={tab}>
+        {renderContent()}
+      </main>
     </div>
+  );
+}
+
+/* ---- SVG Icon Components ---- */
+
+function IconOverview() {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+      <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+    </svg>
+  );
+}
+
+function IconChat() {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  );
+}
+
+function IconAgents() {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+  );
+}
+
+function IconRules() {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7l-9-5z"/>
+    </svg>
+  );
+}
+
+function IconSessions() {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  );
+}
+
+function IconLogs() {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+      <line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/>
+      <line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+    </svg>
+  );
+}
+
+function IconConfig() {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+    </svg>
   );
 }
 
