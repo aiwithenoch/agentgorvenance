@@ -20,7 +20,7 @@ The `GovernanceEngine` uses an unbreakable **Cryptographic Lock**. When the engi
 ## Installation
 
 ```bash
-pip install git+https://github.com/aiwithenoch/agentgorvenance.git
+pip install git+https://github.com/aiwithenoch/agentgovernance.git
 ```
 
 ## How to Deploy Your Agent

@@ -5,7 +5,7 @@ import time
 import schedule
 
 class GovernanceUpdater:
-    def __init__(self, repo_url="https://github.com/aiwithenoch/agentgorvenance.git"):
+    def __init__(self, repo_url="https://github.com/aiwithenoch/agentgovernance.git"):
         self.repo_url = repo_url
         self._running = False
         self._thread = None

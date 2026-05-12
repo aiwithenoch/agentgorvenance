@@ -25,7 +25,7 @@ function App() {
           <a href="#features">Features</a>
           <a href="#security">Security</a>
           <a href="#install">Install</a>
-          <a href="https://github.com/aiwithenoch/agentgorvenance" target="_blank" className="btn-primary" style={{ padding: '0.5rem 1.2rem', fontSize: '0.8rem' }}>GitHub</a>
+          <a href="https://github.com/aiwithenoch/agentgovernance" target="_blank" className="btn-primary" style={{ padding: '0.5rem 1.2rem', fontSize: '0.8rem' }}>GitHub</a>
         </div>
       </nav>
 

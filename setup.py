@@ -6,7 +6,7 @@ setup(
     description="The Omni-Continental Governance Framework and Absolute Protector Engine for AI Agents.",
     author="Enoch",
     author_email="aiwithenoch@gmail.com",
-    url="https://github.com/aiwithenoch/agentgorvenance",
+    url="https://github.com/aiwithenoch/agentgovernance",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
