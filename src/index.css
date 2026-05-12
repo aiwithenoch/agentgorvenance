@@ -1478,8 +1478,7 @@ input, textarea, select {
 .landing-nav__logo svg {
   width: 16px;
   height: 16px;
-  fill: var(--accent);
-  stroke: none;
+  color: var(--accent);
 }
 
 .landing-nav__name {

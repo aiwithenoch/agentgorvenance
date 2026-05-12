@@ -116,8 +116,11 @@ export default function App() {
       <nav className="landing-nav">
         <div className="landing-nav__brand">
           <div className="landing-nav__logo">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7l-9-5z" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <path d="M12 3c-2.2 2.6-3.5 5.6-3.5 9s1.3 6.4 3.5 9c2.2-2.6 3.5-5.6 3.5-9s-1.3-6.4-3.5-9z" />
+              <path d="M12 7.5l-2.8 1.1V11c0 1.7 1.1 3.2 2.8 3.8 1.7-.6 2.8-2.1 2.8-3.8V8.6L12 7.5z" fill="currentColor" stroke="none" />
             </svg>
           </div>
           <span className="landing-nav__name">
@@ -344,8 +347,11 @@ export default function App() {
       <footer className="landing-footer">
         <div className="landing-footer__brand">
           <div className="landing-nav__logo" style={{ width: 24, height: 24 }}>
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7l-9-5z" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <path d="M12 3c-2.2 2.6-3.5 5.6-3.5 9s1.3 6.4 3.5 9c2.2-2.6 3.5-5.6 3.5-9s-1.3-6.4-3.5-9z" />
+              <path d="M12 7.5l-2.8 1.1V11c0 1.7 1.1 3.2 2.8 3.8 1.7-.6 2.8-2.1 2.8-3.8V8.6L12 7.5z" fill="currentColor" stroke="none" />
             </svg>
           </div>
           <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-strong)' }}>AgentGovernance</span>
