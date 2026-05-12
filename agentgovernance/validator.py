@@ -10,16 +10,57 @@ class ComplianceAnnihilationError(Exception):
     """
     pass
 
+class TamperEvidentError(Exception):
+    """
+    Fatal error raised when compliance rules have been cryptographically altered.
+    """
+    pass
+
 class GovernanceEngine:
     def __init__(self, regions: List[str] = None):
         """
-        Initialize the Governance Engine with specific regions.
+        Initialize the Governance Engine with specific regions and perform a cryptographic integrity check.
         """
         self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.rules_dir = os.path.join(self.base_dir, "rules")
         
-        # Load all applicable rules
+        # 1. Perform Cryptographic Lock Check
+        self._verify_cryptographic_integrity()
+        
+        # 2. Load all applicable rules
         self.compiled_rules = self._load_regional_rules(regions)
+
+    def _verify_cryptographic_integrity(self):
+        """Computes SHA-256 hashes of all rules and compares them to the master signature file."""
+        import hashlib
+        sig_path = os.path.join(self.base_dir, "signatures.json")
+        if not os.path.exists(sig_path):
+            raise TamperEvidentError("[FATAL] signatures.json missing. The Governance framework cannot verify its own integrity.")
+            
+        with open(sig_path, "r", encoding="utf-8") as f:
+            master_signatures = json.load(f)
+            
+        json_files = glob.glob(os.path.join(self.rules_dir, "**", "*.json"), recursive=True)
+        for filepath in json_files:
+            rel_path = os.path.relpath(filepath, self.base_dir).replace("\\", "/") # Normalize path separators
+            
+            sha256_hash = hashlib.sha256()
+            with open(filepath, "rb") as f:
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(byte_block)
+            current_hash = sha256_hash.hexdigest()
+            
+            # Find matching signature regardless of path separators
+            matched_hash = None
+            for stored_path, stored_hash in master_signatures.items():
+                if stored_path.replace("\\", "/") == rel_path:
+                    matched_hash = stored_hash
+                    break
+                    
+            if matched_hash is None:
+                raise TamperEvidentError(f"[FATAL] Unsigned governance rule detected: {rel_path}. System compromised.")
+            if current_hash != matched_hash:
+                raise TamperEvidentError(f"[FATAL] Cryptographic mismatch in {rel_path}. Governance rules have been tampered with.")
         
     def _load_regional_rules(self, regions: List[str]) -> Dict[str, Any]:
         compiled = {
